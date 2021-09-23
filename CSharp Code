@@ -1,0 +1,73 @@
+using System;
+using System.Collections.Generic;
+using System.ComponentModel;
+using System.Data;
+using System.Drawing;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+using System.Windows.Forms;
+using System.Data.SqlClient;
+using System.Data.SqlTypes;
+
+namespace XsalarY
+{
+    public partial class LogInForm : Form
+    {
+        public static string userpass1;
+        bool drag = false;
+        Point start_point = new Point(0, 0);
+
+        public LogInForm()
+        {
+            InitializeComponent();
+        }
+
+        private void BtnLogIn_Click(object sender, EventArgs e)
+        {
+            userpass1 = txtusername.Text;
+            string adr = @"Data Source=(LocalDB)\MSSQLLocalDB;AttachDbFilename=C:\Users\MSI\source\repos\XsalarY\XsalarY\Database1.mdf;Integrated Security=True";
+            string qry = "Select *  from LogInTable Where Username='" + txtusername.Text + "' and Password='" + txtpassword.Text + "' ";
+            SqlConnection con = new SqlConnection(adr);
+            con.Open();
+            SqlCommand cmd = new SqlCommand(qry, con);
+            int result = Convert.ToInt32(cmd.ExecuteScalar());
+            if (result > 0)
+            {
+
+
+                string adminuser = " select Admin from LogInTable Where Username = '" + txtusername.Text + "' and Password = '" + txtpassword.Text + "'";
+                SqlCommand cmdadminuser = new SqlCommand(adminuser, con);
+                int adus = Convert.ToInt32(cmdadminuser.ExecuteScalar());
+                if (adus > 0)
+                {
+                    MessageBox.Show("Welcome Admin", "Welcome", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                    MessageBox.Show("Logged In Successfully", "Succesful", MessageBoxButtons.OK, MessageBoxIcon.Asterisk);
+                    Loading form1 = new Loading();
+                    form1.Show();
+                    this.Hide();
+
+                }
+                else if (adus <= 0)
+                {
+
+                    MessageBox.Show("Welcome , You are not Admin", "Not Admin", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                    MessageBox.Show("Logged In Successfully", "Succesful", MessageBoxButtons.OK, MessageBoxIcon.Asterisk);
+
+                }
+
+            }
+            else
+            {
+                MessageBox.Show("INVALID USERNAME OR PASSWORD , PLEASE TRY AGAIN", "FAILED", MessageBoxButtons.OK, MessageBoxIcon.Error);
+
+
+
+            }
+            con.Close();
+
+
+        }
+     }
+  }
+      
